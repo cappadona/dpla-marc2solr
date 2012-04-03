@@ -42,7 +42,7 @@ $data_file = $argv[1];
 $process_number = $argv[2];
 date_default_timezone_set('America/New_York');
 $date_time = date("Ymd.His");
-$log_file = "../../../logs/tasks/marc21_bib_data_parse.process_${process_number}.${date_time}.log";
+$log_file = "logs/tasks/marc21_bib_data_parse.process_${process_number}.${date_time}.log";
 $fh = fopen($log_file, 'w');
 $date_time = date("l dS F Y h:i:s A");
 fwrite($fh, "$date_time: begin\n\n");
