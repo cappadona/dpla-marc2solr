@@ -39,7 +39,7 @@ if (!$result) fwrite($fh, mysql_errno($link) . ":" . mysql_error($link) . "\n");
 #####################################################
 */
 
-$select_query = "SELECT count(*) FROM lc_stage.loc_gov_bib_raw";
+$select_query = "SELECT count(*) FROM librarycloud_stage.cornell_edu_bib_data_raw";
 $result = mysql_query($select_query, $link);
 if (!$result) fwrite($fh, mysql_errno($link) . ":" . mysql_error($link) . "\n");	
 $row = mysql_fetch_row($result);
@@ -53,10 +53,10 @@ $fcount = 0;
 while ($lower_bound < $num_rows)
 {
 	$fcount++;
-	$json_file = "/var/lc_ingestion/data/loc_gov_json/loc_gov_$fcount.json";
+	$json_file = "data/cornell_edu_$fcount.json";
 	$fh_json = fopen($json_file, 'w');	
 	
-	// Need to add in Marc505 in loc_gov_bib_raw schema
+	// Need to add in Marc505 in cornell_edu_bib_data_raw schema
 	$select_query = "SELECT
 	*,
 	uuid() as id,
@@ -74,7 +74,7 @@ while ($lower_bound < $num_rows)
 	Marc010 as id_lccn,
 	Marc035A as id_oclc,
 	'item' as resource_type
-	FROM lc_stage.loc_gov_bib_raw
+	FROM librarycloud_stage.cornell_edu_bib_data_raw
 	WHERE RecordID >= $lower_bound and RecordID < $upper_bound
 	";
 	
