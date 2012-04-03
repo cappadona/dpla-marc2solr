@@ -5,7 +5,7 @@
 /*
 ##########################################
 #
-# Work: parses Harvard raw MARC21 bib data and writes it to lc_raw.harvard_edu_bib_data_raw
+# Work: parses Cornell raw MARC21 bib data and writes it to librarycloud_raw.cornell_edu_bib_data_raw
 #
 # Notes: 
 # 1. MySQL table structure in bib-data table closely mirrors the original MARC data structure 
@@ -28,8 +28,8 @@ require 'File/MARC.php';
 #####################################################
 */
   
-$data_id = "harvard_edu_bib_data_20120224";
-$data_source = "harvard_edu";
+$data_id = "cornell_edu_bib_data_20120403";
+$data_source = "cornell_edu";
 
 /*
 #####################################################
@@ -2874,7 +2874,7 @@ while ($record = $bibrecords->next())
  	}  
 	
 	$insert_query = 
-	"INSERT INTO lc_raw.harvard_edu_bib_data_raw
+	"INSERT INTO librarycloud_raw.cornell_edu_bib_data_raw
 	(
 		MarcLDR, MarcMaterialFormat, Marc001, Marc008Year, Marc008Lang, LangFull, Marc010, Marc020, Marc035A, Marc050, Marc090, Marc100, Marc110, Marc111, Marc130, Marc240A, Marc245A, Marc245NumNonFilingChars, Marc245ASort, Marc245B, Marc245C, Marc246A, Marc250, Marc260, Marc260A, Marc260B, Marc260C, Marc300Pages, Marc300Other, Marc300Dim, Marc440, Marc500, Marc504, Marc505, Marc600, Marc610, Marc611, Marc630, Marc648, Marc650, Marc651, Marc653, Marc654, Marc655, Marc656, Marc657, Marc658, Marc662, Marc690, Marc691, Marc692, Marc693, Marc695, Marc700, Marc710, Marc711, Marc730, Marc856, DataID, DataSource, RecordCreated
 	)
