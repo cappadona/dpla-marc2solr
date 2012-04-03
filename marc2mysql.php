@@ -40,6 +40,7 @@ $data_source = "harvard_edu";
 // Note that largest log-file size PHP can open is 2 GB (2,147,483,647 bytes)
 $data_file = $argv[1];
 $process_number = $argv[2];
+date_default_timezone_set('America/New_York');
 $date_time = date("Ymd.His");
 $log_file = "../../../logs/tasks/marc21_bib_data_parse.process_${process_number}.${date_time}.log";
 $fh = fopen($log_file, 'w');
