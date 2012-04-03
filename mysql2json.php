@@ -17,7 +17,7 @@
 */
 
 $date_time = date("Ymd.His");
-$log_file = "../../logs/tasks/" . basename(__FILE__) . ".${date_time}.log";
+$log_file = "logs/tasks/" . basename(__FILE__) . ".${date_time}.log";
 $fh = fopen($log_file, 'w');
 $date_time = date("l dS F Y h:i:s A");
 fwrite($fh, "$date_time: begin\n\n");
