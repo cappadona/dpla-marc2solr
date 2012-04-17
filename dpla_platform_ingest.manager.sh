@@ -5,7 +5,7 @@
 # Work: ingests json files into mongo
 #
 # Dependencies:
-# 1. json files at /var/lc_ingestion/data
+# 1. json files in data directory
 #
 ##########################################
 
@@ -14,7 +14,7 @@
 #####################################################
 
 date_time_stamp=`date +"%Y%m%d_%H%M%S"`
-logfile=../../logs/managers/dpla_platform_ingest.manager.sh.${date_time_stamp}.log
+logfile=logs/managers/dpla_platform_ingest.manager.sh.${date_time_stamp}.log
 
 echo > $logfile
 echo "Begin" >> $logfile
