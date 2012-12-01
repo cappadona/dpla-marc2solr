@@ -7,9 +7,9 @@
 #
 # Work: parses Cornell raw MARC21 bib data and writes it to librarycloud_raw.cornell_edu_bib_data_raw
 #
-# Notes: 
-# 1. MySQL table structure in bib-data table closely mirrors the original MARC data structure 
-# (though some tags and subfields have been ignored), with minimal formatting performed.  
+# Notes:
+# 1. MySQL table structure in bib-data table closely mirrors the original MARC data structure
+# (though some tags and subfields have been ignored), with minimal formatting performed.
 # No new data layers added here.
 #	2. Formatting:
 # --- '%%' used as iteration separator when multiple instances of tag occur in same record
@@ -27,7 +27,7 @@ require 'File/MARC.php';
 # Initialize dataset vars
 #####################################################
 */
-  
+
 $data_id = "cornell_edu_bib_data_20120403";
 $data_source = "cornell_edu";
 
@@ -50,12 +50,12 @@ fwrite($fh, "data_file: [$data_file]\n");
 fwrite($fh, "log_file: [$log_file]\n");
 $hostName = "[MySQL host]";
 $userName = "[MySQL account name]";
-$pw = "[MySQL account password]";		
+$pw = "[MySQL account password]";
 if(!($link=mysql_pconnect($hostName, $userName, $pw)))
 {
 	fwrite($fh, "error connecting to host");
 	exit(4);
-}  
+}
 $set_names_utf8_query = "SET NAMES 'utf8'";
 $result = mysql_query($set_names_utf8_query, $link);
 if (!$result) fwrite($fh, mysql_errno($link) . ":" . mysql_error($link) . "\n");
@@ -65,13 +65,13 @@ fwrite($fh, "$date_time: begin\n\n");
 function cleanup($input)
 {
 	// Clean up artifacts left over from multi-value separation ("%%") and LC subject parse formatting ("--")
-	$cleaned_tag = preg_replace("/^%%/", "", $input);	
-	$cleaned_tag = preg_replace("/%%$/", "", $cleaned_tag);	
-	$cleaned_tag = preg_replace("/\s*(%%)\s*/", "$1", $cleaned_tag);	
-	$cleaned_tag = preg_replace("/^\s--\s/", "", $cleaned_tag);	
-	$cleaned_tag = preg_replace("/(%%)\s*--\s*/", "$1", $cleaned_tag);	
+	$cleaned_tag = preg_replace("/^%%/", "", $input);
+	$cleaned_tag = preg_replace("/%%$/", "", $cleaned_tag);
+	$cleaned_tag = preg_replace("/\s*(%%)\s*/", "$1", $cleaned_tag);
+	$cleaned_tag = preg_replace("/^\s--\s/", "", $cleaned_tag);
+	$cleaned_tag = preg_replace("/(%%)\s*--\s*/", "$1", $cleaned_tag);
 	// Clean up terminal white space and puncutation left at end of Marc245A
-	$cleaned_tag = preg_replace("/[\s\/;\.:,]*$/", "$1", $cleaned_tag);	
+	$cleaned_tag = preg_replace("/[\s\/;\.:,]*$/", "$1", $cleaned_tag);
 	$cleaned_tag = trim($cleaned_tag);
 	return $cleaned_tag;
 }
@@ -79,16 +79,16 @@ function cleanup($input)
 function normalize($input)
 {
 	// Normalize authors and titles for uniform-title aggregation:
-	// 1. remove all white space, periods, commas 
+	// 1. remove all white space, periods, commas
 	// 2. lowercase everything
 	$input_normalized = strtolower(preg_replace("/[\s\.,]+/", "", $input));
 	return $input_normalized;
 }
 
-function return_language($language_code) 
+function return_language($language_code)
 {
 	$language = "";
-	switch ($language_code) 
+	switch ($language_code)
 	{
 		case "ach":
 		$language = "Acholi";
@@ -1630,29 +1630,29 @@ function return_language($language_code)
 $bibrecords = new File_MARC($data_file, File_MARC::SOURCE_FILE);
 // Iterate through the retrieved records
 $count = 0;
-while ($record = $bibrecords->next()) 
+while ($record = $bibrecords->next())
 {
-	$count++;	
-  fwrite($fh, "\n########## $count. ##########\n\n");	
+	$count++;
+  fwrite($fh, "\n########## $count. ##########\n\n");
   //if ($count % 50 == 0) exit;
 	if ($count % 1000 == 0)
-	{ 
+	{
 		$date_time = date("l dS F Y h:i:s A");
 		fwrite($fh, "$date_time: now processing record no. $count\n");
 	}
   // Initialize vars for each record
-  $vars = array('data', 'marc_ldr', 'marc_material_format', 'type_of_record', 'bibliographic_level', 'marc_001', 'marc_008_year', 'marc_008_lang', 'lang_full', 'marc_010', 'marc_020', 'marc_035_a', 'marc_050', 'marc_090', 'marc_100', 'marc_110', 'marc_111', 'marc_130', 'marc_240_a', 'marc_245_a', 'marc_245_b', 'marc_245_c', 'marc_245_num_non_filing_chars', 'marc_245_a_sort', 'marc_246_a', 'marc_250', 'marc_260', 'marc_260_a', 'marc_260_b', 'marc_260_c', 'marc_300_pages', 'marc_300_other', 'marc_300_dim', 'marc_440', 'marc_500', 'marc_504', 'marc_505', 'marc_600', 'marc_610', 'marc_611', 'marc_630', 'marc_648', 'marc_650', 'marc_651', 'marc_653', 'marc_654', 'marc_655', 'marc_656', 'marc_657', 'marc_658', 'marc_662', 'marc_690', 'marc_691', 'marc_692', 'marc_693', 'marc_695', 'marc_700', 'marc_710', 'marc_711', 'marc_730', 'marc_856');	
+  $vars = array('data', 'marc_ldr', 'marc_material_format', 'type_of_record', 'bibliographic_level', 'marc_001', 'marc_008_year', 'marc_008_lang', 'lang_full', 'marc_010', 'marc_020', 'marc_035_a', 'marc_050', 'marc_090', 'marc_100', 'marc_110', 'marc_111', 'marc_130', 'marc_240_a', 'marc_245_a', 'marc_245_b', 'marc_245_c', 'marc_245_num_non_filing_chars', 'marc_245_a_sort', 'marc_246_a', 'marc_250', 'marc_260', 'marc_260_a', 'marc_260_b', 'marc_260_c', 'marc_300_pages', 'marc_300_other', 'marc_300_dim', 'marc_440', 'marc_500', 'marc_504', 'marc_505', 'marc_600', 'marc_610', 'marc_611', 'marc_630', 'marc_648', 'marc_650', 'marc_651', 'marc_653', 'marc_654', 'marc_655', 'marc_656', 'marc_657', 'marc_658', 'marc_662', 'marc_690', 'marc_691', 'marc_692', 'marc_693', 'marc_695', 'marc_700', 'marc_710', 'marc_711', 'marc_730', 'marc_856');
   foreach ($vars as $var)
  	{
  		$$var = "";
- 	}  
+ 	}
 
   /*
   #####################################################
   # Get leader (LDR) -- get type of record and bibliographic level
   #####################################################
   */
-  
+
   $marc_ldr = $record->getLeader();
   fwrite($fh, "marc_ldr: [$marc_ldr]\n");
 	if (preg_match("/\d{5}[a-z]([a-z])([a-z])/", $marc_ldr, $match))
@@ -1733,34 +1733,31 @@ while ($record = $bibrecords->next())
 			 break;
 	 	   default:
 	 			break;
-		}		
+		}
 		$marc_material_format = "$type_of_record -- $bibliographic_level";
 		fwrite($fh, "marc_material_format: [$marc_material_format]\n");
 	}
-  
+
   /*
   #####################################################
   # Get local control number (001) -- no subfields used in MARC; currently capturing only Harvard-formatted numbers
   #####################################################
   */
-  
+
   if ($field_value = $record->getField('001'))
 	{
 		fwrite($fh, "field_value: [$field_value]\n");
-		// All Hollis records are 9 digits long
-		if (preg_match ("/(\d{9})/", $field_value->formatField(), $match))
-		{
-			$marc_001 = cleanup($match[1]);
-			fwrite($fh, "marc_001: [$marc_001]\n");
-		}
+		$data = $field_value->getData();
+		$marc_001 = cleanup($data);
+		fwrite($fh, "marc_001: [$marc_001]\n");
 	}
-	
+
   /*
   #####################################################
   # Get pub year and language (008) -- offsets 7 and 35 respectively
   #####################################################
   */
-  
+
 	if ($field_value = $record->getField('008'))
 	{
 		fwrite($fh, "field_value: [$field_value]\n");
@@ -1774,13 +1771,13 @@ while ($record = $bibrecords->next())
 			fwrite($fh, "lang_full: [$lang_full]\n");
 		}
 	}
-	
+
   /*
   #####################################################
   # Get Library of Congress control number (010) -- subfield a
   #####################################################
   */
-  
+
 	if ($field_value = $record->getField('010'))
 	{
 		fwrite($fh, "field_value: [$field_value]\n");
@@ -1791,13 +1788,13 @@ while ($record = $bibrecords->next())
 			fwrite($fh, "marc_010: [$marc_010]\n");
 		}
 	}
-	
+
   /*
   #####################################################
   # Get ISBN (020) -- subfield a (stripped of non-digits, both 10- and 13-digit variants; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('020'))
 	{
 		foreach ($field_values as $field_value)
@@ -1812,18 +1809,18 @@ while ($record = $bibrecords->next())
 					$current_field = $match[1];
 				}
 			}
-			$marc_020 .= "%%$current_field";			
+			$marc_020 .= "%%$current_field";
 		}
 		$marc_020 = cleanup($marc_020);
 		fwrite($fh, "marc_020: [$marc_020]\n");
 	}
-	
+
   /*
   #####################################################
   # Get OCLC number (035) -- subfield a
   #####################################################
   */
-  
+
 	if ($field_value = $record->getField('035'))
 	{
 		fwrite($fh, "field_value: [$field_value]\n");
@@ -1834,19 +1831,19 @@ while ($record = $bibrecords->next())
 			fwrite($fh, "marc_035_a: [$marc_035_a]\n");
 		}
 	}
-	
+
   /*
   #####################################################
   # Get LC call number (050) -- all subfields; multi-value
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('050'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -1857,18 +1854,18 @@ while ($record = $bibrecords->next())
 			$marc_050 .= "%%$current_field";
 		}
 		$marc_050 = cleanup($marc_050);
-		fwrite($fh, "marc_050: [$marc_050]\n");		
+		fwrite($fh, "marc_050: [$marc_050]\n");
 	}
-	
+
   /*
   #####################################################
   # Get LC call number: alternate location ("local call number") (090) -- all subfields
   #####################################################
   */
-  	
+
 	if ($field_value = $record->getField('090'))
 	{
-		fwrite($fh, "field_value: [$field_value]\n");		
+		fwrite($fh, "field_value: [$field_value]\n");
 		$subfields = $field_value->getSubfields();
 		foreach($subfields as $subfield)
 		{
@@ -1876,16 +1873,16 @@ while ($record = $bibrecords->next())
 			$data = $subfield->getData();
 			$marc_090 .= " $data";
 		}
-		$marc_090 = cleanup($marc_090);		
+		$marc_090 = cleanup($marc_090);
 		fwrite($fh, "marc_090: [$marc_090]\n");
 	}
-	
+
   /*
   #####################################################
   # Get personal author (100) -- all subfields
   #####################################################
   */
-  
+
 	if ($field_value = $record->getField('100'))
 	{
 		fwrite($fh, "field_value: [$field_value]\n");
@@ -1899,18 +1896,18 @@ while ($record = $bibrecords->next())
 			}
 		}
 		$marc_100 = cleanup($marc_100);
-		fwrite($fh, "marc_100: [$marc_100]\n");	
+		fwrite($fh, "marc_100: [$marc_100]\n");
 	}
-	
+
   /*
   #####################################################
   # Get corporate author (110) -- all subfields
   #####################################################
   */
-  
+
 	if ($field_value = $record->getField('110'))
 	{
-		fwrite($fh, "field_value: [$field_value]\n");		
+		fwrite($fh, "field_value: [$field_value]\n");
 		$subfields = $field_value->getSubfields();
 		foreach($subfields as $subfield)
 		{
@@ -1923,16 +1920,16 @@ while ($record = $bibrecords->next())
 		$marc_110 = cleanup($marc_110);
 		fwrite($fh, "marc_110: [$marc_110]\n");
 	}
-	
+
   /*
   #####################################################
   # Get meeting author (111) -- all subfields
   #####################################################
   */
-  
+
 	if ($field_value = $record->getField('111'))
 	{
-		fwrite($fh, "field_value: [$field_value]\n");		
+		fwrite($fh, "field_value: [$field_value]\n");
 		$subfields = $field_value->getSubfields();
 		foreach($subfields as $subfield)
 		{
@@ -1942,7 +1939,7 @@ while ($record = $bibrecords->next())
 				$marc_111 .= " $data";
 			}
 		}
-		$marc_111 = cleanup($marc_111);		
+		$marc_111 = cleanup($marc_111);
 		fwrite($fh, "marc_111: [$marc_111]\n");
 	}
 
@@ -1951,7 +1948,7 @@ while ($record = $bibrecords->next())
   # Get uniform title (130) -- subfield a
   #####################################################
   */
-	
+
 	if ($field_value = $record->getField('130'))
 	{
 		fwrite($fh, "field_value: [$field_value]\n");
@@ -1962,14 +1959,14 @@ while ($record = $bibrecords->next())
 			$marc_130 = cleanup($marc_130);
 			fwrite($fh, "marc_130: [$marc_130]\n");
 		}
-	}	
-	
+	}
+
   /*
   #####################################################
   # Get uniform title (240) -- subfield a
   #####################################################
   */
-	
+
 	if ($field_value = $record->getField('240'))
 	{
 		fwrite($fh, "field_value: [$field_value]\n");
@@ -1981,13 +1978,13 @@ while ($record = $bibrecords->next())
 			fwrite($fh, "marc_240_a: [$marc_240_a]\n");
 		}
 	}
-		
+
   /*
   #####################################################
   # Get title (245) -- subfields a, b, and c; also get number of non-filing chars and use to generate sortable title format
   #####################################################
   */
-  
+
 	if ($field_value = $record->getField('245'))
 	{
 		fwrite($fh, "field_value: [$field_value]\n");
@@ -2000,7 +1997,7 @@ while ($record = $bibrecords->next())
 		{
 			$marc_245_b = $subfield->getData();
 			fwrite($fh, "marc_245_b: [$marc_245_b]\n");
-		}	
+		}
 		if ($subfield = $field_value->getSubfield('c'))
 		{
 			$marc_245_c = $subfield->getData();
@@ -2020,13 +2017,13 @@ while ($record = $bibrecords->next())
 	settype($marc_245_num_non_filing_chars_as_int, "integer");
 	$marc_245_a_sort = trim(mb_substr($marc_245_a, $marc_245_num_non_filing_chars_as_int));
 	fwrite($fh, "marc_245_a_sort: [$marc_245_a_sort]\n");
-	
+
   /*
   #####################################################
   # Get varying form of title (246) -- subfield a; multi-valued
   #####################################################
   */
-	
+
 	if ($field_values = $record->getFields('246'))
 	{
 		foreach ($field_values as $field_value)
@@ -2037,18 +2034,18 @@ while ($record = $bibrecords->next())
 			{
 				$current_field = $subfield->getData();
 			}
-			$marc_246_a .= "%%$current_field";			
+			$marc_246_a .= "%%$current_field";
 		}
 		$marc_246_a = cleanup($marc_246_a);
 		fwrite($fh, "marc_246_a: [$marc_246_a]\n");
 	}
-	
+
   /*
   #####################################################
   # Get edition (250) -- all subfields
   #####################################################
   */
-  
+
 	if ($field_value = $record->getField('250'))
 	{
 		$subfields = $field_value->getSubfields();
@@ -2061,26 +2058,26 @@ while ($record = $bibrecords->next())
 		$marc_250 = cleanup($marc_250);
 		fwrite($fh, "marc_250: [$marc_250]\n");
 	}
-	
+
   /*
   #####################################################
   # Get imprint (260) -- subfields a, b, c
   #####################################################
   */
-  
+
 	if ($field_value = $record->getField('260'))
 	{
 		fwrite($fh, "field_value: [$field_value]\n");
 		if ($subfield = $field_value->getSubfield('a'))
 		{
 			$marc_260_a = $subfield->getData();
-			fwrite($fh, "marc_260_a: [$marc_260_a]\n");			
+			fwrite($fh, "marc_260_a: [$marc_260_a]\n");
 		}
 		if ($subfield = $field_value->getSubfield('b'))
 		{
 			$marc_260_b = $subfield->getData();
 			fwrite($fh, "marc_260_b: [$marc_260_b]\n");
-		}	
+		}
 		if ($subfield = $field_value->getSubfield('c'))
 		{
 			$marc_260_c = $subfield->getData();
@@ -2088,14 +2085,14 @@ while ($record = $bibrecords->next())
 		}
 		$marc_260 = cleanup("$marc_260_a$marc_260_b$marc_260_c");
 		fwrite($fh, "marc_260: [$marc_260]\n");
-	}	
-	
+	}
+
   /*
   #####################################################
   # Get physical description (300) -- subfields a, b, c
   #####################################################
   */
-  
+
 	if ($field_value = $record->getField('300'))
 	{
 		fwrite($fh, "field_value: [$field_value]\n");
@@ -2107,27 +2104,27 @@ while ($record = $bibrecords->next())
 		if ($subfield = $field_value->getSubfield('b'))
 		{
 			$marc_300_other = cleanup($subfield->getData());
-			fwrite($fh, "marc_300_other: [$marc_300_other]\n");			
-		}	
+			fwrite($fh, "marc_300_other: [$marc_300_other]\n");
+		}
 		if ($subfield = $field_value->getSubfield('c'))
 		{
 			$marc_300_dim = cleanup($subfield->getData());
-			fwrite($fh, "marc_300_dim: [$marc_300_dim]\n");			
+			fwrite($fh, "marc_300_dim: [$marc_300_dim]\n");
 		}
-	}	
-	
+	}
+
   /*
   #####################################################
   # Get series (440) -- all subfields
   #####################################################
   */
-	
+
 	if ($field_values = $record->getFields('440'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2138,21 +2135,21 @@ while ($record = $bibrecords->next())
 			$marc_440 .= "%%$current_field";
 		}
 		$marc_440 = cleanup($marc_440);
-		fwrite($fh, "marc_440: [$marc_440]\n");		
+		fwrite($fh, "marc_440: [$marc_440]\n");
 	}
-		
+
   /*
   #####################################################
   # Get general note (500) -- all subfields; multi-valued
   #####################################################
   */
-	
+
 	if ($field_values = $record->getFields('500'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2163,21 +2160,21 @@ while ($record = $bibrecords->next())
 			$marc_500 .= "%%$current_field";
 		}
 		$marc_500 = cleanup($marc_500);
-		fwrite($fh, "marc_500: [$marc_500]\n");		
+		fwrite($fh, "marc_500: [$marc_500]\n");
 	}
-	
+
   /*
   #####################################################
   # Get bibliography note (504) -- all subfields; multi-valued
   #####################################################
   */
-	
+
 	if ($field_values = $record->getFields('504'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2188,21 +2185,21 @@ while ($record = $bibrecords->next())
 			$marc_504 .= "%%$current_field";
 		}
 		$marc_504 = cleanup($marc_504);
-		fwrite($fh, "marc_504: [$marc_504]\n");		
+		fwrite($fh, "marc_504: [$marc_504]\n");
 	}
-	
+
   /*
   #####################################################
   # Get formatted contents note (505) -- all subfields; multi-valued
   #####################################################
   */
-		
+
 	if ($field_values = $record->getFields('505'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2213,7 +2210,7 @@ while ($record = $bibrecords->next())
 			$marc_505 .= "%%$current_field";
 		}
 		$marc_505 = cleanup($marc_505);
-		fwrite($fh, "marc_505: [$marc_505]\n");		
+		fwrite($fh, "marc_505: [$marc_505]\n");
 	}
 
   /*
@@ -2221,7 +2218,7 @@ while ($record = $bibrecords->next())
   # Get subject personal name (600) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('600'))
 	{
 		foreach ($field_values as $field_value)
@@ -2245,14 +2242,14 @@ while ($record = $bibrecords->next())
 		}
 		$marc_600 = cleanup($marc_600);
 		fwrite($fh, "marc_600: [$marc_600]\n");
-	}					
-	
+	}
+
   /*
   #####################################################
   # Get subject corporate name (610) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('610'))
 	{
 		foreach ($field_values as $field_value)
@@ -2276,14 +2273,14 @@ while ($record = $bibrecords->next())
 		}
 		$marc_610 = cleanup($marc_610);
 		fwrite($fh, "marc_610: [$marc_610]\n");
-	}					
-	
+	}
+
   /*
   #####################################################
   # Get subject meeting name (611) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('611'))
 	{
 		foreach ($field_values as $field_value)
@@ -2307,20 +2304,20 @@ while ($record = $bibrecords->next())
 		}
 		$marc_611 = cleanup($marc_611);
 		fwrite($fh, "marc_611: [$marc_611]\n");
-	}	
+	}
 
   /*
   #####################################################
   # Get subject uniform title (630) -- subfield a; multi-valued
   #####################################################
   */
-		
+
 	if ($field_values = $record->getFields('630'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2333,21 +2330,21 @@ while ($record = $bibrecords->next())
 			$marc_630 .= "%%$current_field";
 		}
 		$marc_630 = cleanup($marc_630);
-		fwrite($fh, "marc_630: [$marc_630]\n");		
-	}	
-			
+		fwrite($fh, "marc_630: [$marc_630]\n");
+	}
+
   /*
   #####################################################
   # Get subject chronological term (648) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('648'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2358,21 +2355,21 @@ while ($record = $bibrecords->next())
 			$marc_648 .= "%%$current_field";
 		}
 		$marc_648 = cleanup($marc_648);
-		fwrite($fh, "marc_648: [$marc_648]\n");		
+		fwrite($fh, "marc_648: [$marc_648]\n");
 	}
-		
+
   /*
   #####################################################
   # Get subject topical term (650) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('650'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2383,21 +2380,21 @@ while ($record = $bibrecords->next())
 			$marc_650 .= "%%$current_field";
 		}
 		$marc_650 = cleanup($marc_650);
-		fwrite($fh, "marc_650: [$marc_650]\n");		
+		fwrite($fh, "marc_650: [$marc_650]\n");
 	}
-		
+
   /*
   #####################################################
   # Get subject geographic name (651) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('651'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2408,21 +2405,21 @@ while ($record = $bibrecords->next())
 			$marc_651 .= "%%$current_field";
 		}
 		$marc_651 = cleanup($marc_651);
-		fwrite($fh, "marc_651: [$marc_651]\n");		
+		fwrite($fh, "marc_651: [$marc_651]\n");
 	}
-		
+
   /*
   #####################################################
   # Get subject uncontrolled index term (653) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('653'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2433,21 +2430,21 @@ while ($record = $bibrecords->next())
 			$marc_653 .= "%%$current_field";
 		}
 		$marc_653 = cleanup($marc_653);
-		fwrite($fh, "marc_653: [$marc_653]\n");		
+		fwrite($fh, "marc_653: [$marc_653]\n");
 	}
-		
+
   /*
   #####################################################
   # Get subject faceted topical term (654) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('654'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2458,21 +2455,21 @@ while ($record = $bibrecords->next())
 			$marc_654 .= "%%$current_field";
 		}
 		$marc_654 = cleanup($marc_654);
-		fwrite($fh, "marc_654: [$marc_654]\n");		
+		fwrite($fh, "marc_654: [$marc_654]\n");
 	}
-		
+
   /*
   #####################################################
   # Get subject genre (655) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('655'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2483,21 +2480,21 @@ while ($record = $bibrecords->next())
 			$marc_655 .= "%%$current_field";
 		}
 		$marc_655 = cleanup($marc_655);
-		fwrite($fh, "marc_655: [$marc_655]\n");		
+		fwrite($fh, "marc_655: [$marc_655]\n");
 	}
-		
+
   /*
   #####################################################
   # Get subject occupation (656) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('656'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2508,21 +2505,21 @@ while ($record = $bibrecords->next())
 			$marc_656 .= "%%$current_field";
 		}
 		$marc_656 = cleanup($marc_656);
-		fwrite($fh, "marc_656: [$marc_656]\n");		
+		fwrite($fh, "marc_656: [$marc_656]\n");
 	}
-		
+
   /*
   #####################################################
   # Get subject function (657) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('657'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2533,21 +2530,21 @@ while ($record = $bibrecords->next())
 			$marc_657 .= "%%$current_field";
 		}
 		$marc_657 = cleanup($marc_657);
-		fwrite($fh, "marc_657: [$marc_657]\n");		
+		fwrite($fh, "marc_657: [$marc_657]\n");
 	}
-		
+
   /*
   #####################################################
   # Get subject curriculum objective (658) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('658'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2558,21 +2555,21 @@ while ($record = $bibrecords->next())
 			$marc_658 .= "%%$current_field";
 		}
 		$marc_658 = cleanup($marc_658);
-		fwrite($fh, "marc_658: [$marc_658]\n");		
+		fwrite($fh, "marc_658: [$marc_658]\n");
 	}
-		
+
   /*
   #####################################################
   # Get subject hierarchical place name (662) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('662'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2583,21 +2580,21 @@ while ($record = $bibrecords->next())
 			$marc_662 .= "%%$current_field";
 		}
 		$marc_662 = cleanup($marc_662);
-		fwrite($fh, "marc_662: [$marc_662]\n");		
+		fwrite($fh, "marc_662: [$marc_662]\n");
 	}
-		
+
   /*
   #####################################################
   # Get local subject access field (690) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('690'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2608,21 +2605,21 @@ while ($record = $bibrecords->next())
 			$marc_690 .= "%%$current_field";
 		}
 		$marc_690 = cleanup($marc_690);
-		fwrite($fh, "marc_690: [$marc_690]\n");		
+		fwrite($fh, "marc_690: [$marc_690]\n");
 	}
-		
+
   /*
   #####################################################
   # Get local subject access field (691) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('691'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2633,21 +2630,21 @@ while ($record = $bibrecords->next())
 			$marc_691 .= "%%$current_field";
 		}
 		$marc_691 = cleanup($marc_691);
-		fwrite($fh, "marc_691: [$marc_691]\n");		
+		fwrite($fh, "marc_691: [$marc_691]\n");
 	}
-		
+
   /*
   #####################################################
   # Get local subject access field (692) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('692'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2658,21 +2655,21 @@ while ($record = $bibrecords->next())
 			$marc_692 .= "%%$current_field";
 		}
 		$marc_692 = cleanup($marc_692);
-		fwrite($fh, "marc_692: [$marc_692]\n");		
+		fwrite($fh, "marc_692: [$marc_692]\n");
 	}
-		
+
   /*
   #####################################################
   # Get local subject access field (693) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('693'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2683,21 +2680,21 @@ while ($record = $bibrecords->next())
 			$marc_693 .= "%%$current_field";
 		}
 		$marc_693 = cleanup($marc_693);
-		fwrite($fh, "marc_693: [$marc_693]\n");		
+		fwrite($fh, "marc_693: [$marc_693]\n");
 	}
-		
+
   /*
   #####################################################
   # Get local subject access field (695) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('695'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2708,15 +2705,15 @@ while ($record = $bibrecords->next())
 			$marc_695 .= "%%$current_field";
 		}
 		$marc_695 = cleanup($marc_695);
-		fwrite($fh, "marc_695: [$marc_695]\n");		
+		fwrite($fh, "marc_695: [$marc_695]\n");
 	}
-			
+
   /*
   #####################################################
   # Get added entry personal name (700) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('700'))
 	{
 		foreach ($field_values as $field_value)
@@ -2740,14 +2737,14 @@ while ($record = $bibrecords->next())
 		}
 		$marc_700 = cleanup($marc_700);
 		fwrite($fh, "marc_700: [$marc_700]\n");
-	}					
-					
+	}
+
   /*
   #####################################################
   # Get added entry corporate name (710) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('710'))
 	{
 		foreach ($field_values as $field_value)
@@ -2771,14 +2768,14 @@ while ($record = $bibrecords->next())
 		}
 		$marc_710 = cleanup($marc_710);
 		fwrite($fh, "marc_710: [$marc_710]\n");
-	}	
-					
+	}
+
   /*
   #####################################################
   # Get added entry meeting name (711) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('711'))
 	{
 		foreach ($field_values as $field_value)
@@ -2802,47 +2799,47 @@ while ($record = $bibrecords->next())
 		}
 		$marc_711 = cleanup($marc_711);
 		fwrite($fh, "marc_711: [$marc_711]\n");
-	}					
+	}
 
   /*
   #####################################################
   # Get added entry uniform title (730) -- subfield a; multi-valued
   #####################################################
   */
-	
+
 	if ($field_values = $record->getFields('730'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
 				if (preg_match("/[a]/", $code = $subfield->getCode()))
 				{
 					$data = $subfield->getData();
-					$current_field .= " $data";					
+					$current_field .= " $data";
 				}
 			}
 			$marc_730 .= "%%$current_field";
 		}
 		$marc_730 = cleanup($marc_730);
-		fwrite($fh, "marc_730: [$marc_730]\n");		
-	}	
-	
+		fwrite($fh, "marc_730: [$marc_730]\n");
+	}
+
   /*
   #####################################################
   # Get electonic access info (856) -- all subfields; multi-valued
   #####################################################
   */
-  
+
 	if ($field_values = $record->getFields('856'))
 	{
 		foreach ($field_values as $field_value)
-		{		
+		{
 			$current_field = "";
-			fwrite($fh, "field_value: [$field_value]\n");		
+			fwrite($fh, "field_value: [$field_value]\n");
 			$subfields = $field_value->getSubfields();
 			foreach($subfields as $subfield)
 			{
@@ -2853,7 +2850,7 @@ while ($record = $bibrecords->next())
 			$marc_856 .= "%%$current_field";
 		}
 		$marc_856 = cleanup($marc_856);
-		fwrite($fh, "marc_856: [$marc_856]\n");		
+		fwrite($fh, "marc_856: [$marc_856]\n");
 	}
 
 
@@ -2871,21 +2868,21 @@ while ($record = $bibrecords->next())
  		{
  			$$var = addslashes($$var);
  		}
- 	}  
-	
-	$insert_query = 
+ 	}
+
+	$insert_query =
 	"INSERT INTO librarycloud_raw.cornell_edu_bib_data_raw
 	(
 		MarcLDR, MarcMaterialFormat, Marc001, Marc008Year, Marc008Lang, LangFull, Marc010, Marc020, Marc035A, Marc050, Marc090, Marc100, Marc110, Marc111, Marc130, Marc240A, Marc245A, Marc245NumNonFilingChars, Marc245ASort, Marc245B, Marc245C, Marc246A, Marc250, Marc260, Marc260A, Marc260B, Marc260C, Marc300Pages, Marc300Other, Marc300Dim, Marc440, Marc500, Marc504, Marc505, Marc600, Marc610, Marc611, Marc630, Marc648, Marc650, Marc651, Marc653, Marc654, Marc655, Marc656, Marc657, Marc658, Marc662, Marc690, Marc691, Marc692, Marc693, Marc695, Marc700, Marc710, Marc711, Marc730, Marc856, DataID, DataSource, RecordCreated
 	)
 	VALUES
-	(		
+	(
 		'$marc_ldr', '$marc_material_format', '$marc_001', '$marc_008_year', '$marc_008_lang', '$lang_full', '$marc_010', '$marc_020', '$marc_035_a', '$marc_050', '$marc_090', '$marc_100', '$marc_110', '$marc_111', '$marc_130', '$marc_240_a', '$marc_245_a', '$marc_245_num_non_filing_chars', '$marc_245_a_sort', '$marc_245_b', '$marc_245_c', '$marc_246_a', '$marc_250', '$marc_260', '$marc_260_a', '$marc_260_b', '$marc_260_c', '$marc_300_pages', '$marc_300_other', '$marc_300_dim', '$marc_440', '$marc_500', '$marc_504', '$marc_505', '$marc_600', '$marc_610', '$marc_611', '$marc_630', '$marc_648', '$marc_650', '$marc_651', '$marc_653', '$marc_654', '$marc_655', '$marc_656', '$marc_657', '$marc_658', '$marc_662', '$marc_690', '$marc_691', '$marc_692', '$marc_693', '$marc_695', '$marc_700', '$marc_710', '$marc_711', '$marc_730', '$marc_856', '$data_id', '$data_source', now()
 	)";
 	//fwrite($fh, "insert_query: [$insert_query]\n");
 	$result = mysql_query($insert_query, $link);
 	if (!$result) fwrite($fh, mysql_errno($link) . ":" . mysql_error($link) . "\n");
-	
+
 }
 
 $date_time = date("l dS F Y h:i:s A");
